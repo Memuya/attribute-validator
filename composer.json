@@ -1,0 +1,22 @@
+{
+    "name": "memuya/attribute-validator",
+    "description": "PHP object validator",
+    "authors": [
+        {
+          "name": "Mehmet Uyanik",
+          "email": "mehmet.uyanik@live.com.au"
+        }
+    ],
+    "require": {
+        "php": ">=8.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "9.5.5"
+    },
+    "autoload": {
+        "psr-4": {
+          "Memuya\\Validator\\": "src/"
+        }
+    },
+    "minimum-stability": "stable"
+}
