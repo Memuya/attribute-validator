@@ -11,9 +11,9 @@ class Validator
     /**
      * Holds all validation errors.
      *
-     * @var array
+     * @var array<string, ValidationResult>
      */
-	private array $validationResults = [];
+    private array $validationResults = [];
 
     /**
      * The object to be validated.
@@ -26,7 +26,7 @@ class Validator
     {
         $this->object = $object;
     }
-    
+
     /**
      * Create a new Validator instance for the given object.
      *
@@ -35,13 +35,13 @@ class Validator
      */
     public static function for(object $object): self
     {
-    	return new self($object);
+        return new self($object);
     }
 
     /**
      * Validate the object and return the errors.
      *
-     * @return array
+     * @return array<string, ValidationResult>
      */
     public function validateAndGetErrors(): array
     {
@@ -53,37 +53,37 @@ class Validator
      *
      * @return self
      */
-	public function validate(): self
-	{
-		$reflection = new ReflectionClass($this->object);
+    public function validate(): self
+    {
+        $reflection = new ReflectionClass($this->object);
 
-		foreach ($reflection->getProperties() as $property) {
-			$propertyValue = $this->getValueFromProperty($property);
-			$validators = $property->getAttributes(Rule::class, ReflectionAttribute::IS_INSTANCEOF);
-			
-			foreach ($validators as $validator) {
-				$instance = $validator->newInstance();
-		        $validationResult = $instance->validate($propertyValue);
-				
-				if (!$validationResult->isValid) {
+        foreach ($reflection->getProperties() as $property) {
+            $propertyValue = $this->getValueFromProperty($property);
+            $validators = $property->getAttributes(Rule::class, ReflectionAttribute::IS_INSTANCEOF);
+
+            foreach ($validators as $validator) {
+                $instance = $validator->newInstance();
+                $validationResult = $instance->validate($propertyValue);
+
+                if (!$validationResult->isValid) {
                     $this->addError($validationResult, $property);
-				}
-			}
-		}
+                }
+            }
+        }
 
         return $this;
-	}
+    }
 
     // public function validate(string $property): self
     // {
     //     $property = new ReflectionProperty($this->object, $property);
     //     $propertyValue = $this->getValueFromProperty($property);
     //     $validators = $property->getAttributes(Rule::class, ReflectionAttribute::IS_INSTANCEOF);
-        
+
     //     foreach ($validators as $validator) {
     //         $instance = $validator->newInstance();
     //         $validationResult = $instance->validate($propertyValue);
-            
+
     //         if (!$validationResult->isValid) {
     //             $this->addError($validationResult, $property);
     //         }
@@ -95,7 +95,7 @@ class Validator
     /**
      * Return all validation errors.
      *
-     * @return array
+     * @return array<string, ValidationResult>
      */
     public function getErrors(): array
     {
@@ -105,7 +105,7 @@ class Validator
     /**
      * Return all validation errors flattened into a single dimensional array.
      *
-     * @return array
+     * @return array<int, ValidationResult>
      */
     public function getErrorsFlattened(): array
     {
@@ -114,7 +114,7 @@ class Validator
         $errors = $this->getErrors();
         $flattenedErrors = [];
 
-        array_walk_recursive($errors, function ($error) use (&$flattenedErrors) {
+        array_walk_recursive($errors, function (ValidationResult $error) use (&$flattenedErrors) {
             $flattenedErrors[] = $error;
         });
 
